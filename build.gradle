@@ -3,7 +3,7 @@ plugins {
     id 'maven'
 }
 
-group 'org.example'
+group 'com.github.orql'
 version '0.0.1'
 
 sourceCompatibility = 1.8
