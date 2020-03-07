@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Parser {
+public class OrqlParser {
 
     private static Map<String, OrqlNode> caches = new HashMap<>();
 
@@ -22,7 +22,7 @@ public class Parser {
 
     private Token token;
 
-    public Parser(SchemaManager schemaManager) {
+    public OrqlParser(SchemaManager schemaManager) {
         this.schemaManager = schemaManager;
     }
 

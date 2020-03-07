@@ -1,7 +1,7 @@
 package com.github.orql.core;
 
 import com.github.orql.core.orql.OrqlNode.*;
-import com.github.orql.core.orql.Parser;
+import com.github.orql.core.orql.OrqlParser;
 import com.github.orql.core.schema.SchemaManager;
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,7 +18,7 @@ public class OrqlParserTest {
     }
 
     private OrqlRefItem parse(String orql) {
-        Parser parser = new Parser(schemaManager);
+        OrqlParser parser = new OrqlParser(schemaManager);
         return parser.parse(orql).getRoot();
     }
 

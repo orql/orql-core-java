@@ -8,7 +8,7 @@ import com.github.orql.core.schema.SchemaInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrqlResult {
+public class OrqlResultGen {
 
     public ResultRoot toResult(OrqlRefItem orqlRoot) {
         return toResult(orqlRoot, orqlRoot.getRef().getTable(), new ArrayList<>());
