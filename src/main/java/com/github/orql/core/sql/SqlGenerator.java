@@ -130,7 +130,7 @@ public class SqlGenerator {
         return "insert into " + insert.getTable() +
                 "(" + insert.getColumns().stream().map(SqlColumn::getName).collect(Collectors.joining(", ")) + ")" +
                 " values " +
-                "(" + insert.getParams().stream().map(param -> "$" + param.getName()).collect(Collectors.joining(", ")) + ")";
+                "(" + insert.getParams().stream().map(this::genSqlParam).collect(Collectors.joining(", ")) + ")";
     }
 
     private String genDelete(SqlDelete delete) {

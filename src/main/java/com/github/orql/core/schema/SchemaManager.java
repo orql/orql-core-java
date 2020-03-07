@@ -4,6 +4,7 @@ import com.github.orql.core.annotation.*;
 import com.github.orql.core.exception.TypeNotSupportException;
 import com.github.orql.core.util.Strings;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +54,11 @@ public class SchemaManager {
     }
 
     public void scanPackage(String path) {
-        Reflections reflections = new Reflections(path);
+        Reflections reflections = new Reflections(new ConfigurationBuilder().forPackages(path));
         List<ReflectWrapper> reflectWrappers = new ArrayList<>();
         Set<Class<?>> schemas = reflections.getTypesAnnotatedWith(com.github.orql.core.annotation.Schema.class);
         for (Class<?> clazz : schemas) {
-            logger.info("scan class " + clazz);
+            logger.info("scan schema {}", clazz.getName());
             SchemaInfo schema = initSchema(clazz);
             Field[] fields = clazz.getDeclaredFields();
             ReflectWrapper wrapper = new ReflectWrapper();
