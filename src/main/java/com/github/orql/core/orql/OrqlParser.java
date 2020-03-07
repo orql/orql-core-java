@@ -131,9 +131,11 @@ public class OrqlParser {
 
     private OrqlNode.OrqlExp visitWhere(SchemaInfo schema) {
         OrqlNode.OrqlExp exp = null;
-        if (isToken(TokenType.OPEN_PAREN) || isToken(TokenType.NAME)) {
+        if (isToken(TokenType.OPEN_PAREN)) {
+            walk();
             // 表达式以(或name开头
             exp = visitExp(schema);
+            matchToken(TokenType.CLOSE_PAREN);
         }
         return exp;
     }

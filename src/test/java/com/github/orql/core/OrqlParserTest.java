@@ -41,4 +41,10 @@ public class OrqlParserTest {
         Assert.assertTrue(item.getChildren().get(1) instanceof OrqlIgnoreItem);
         Assert.assertEquals(item.getChildren().get(1).getName(), "password");
     }
+
+    @Test
+    public void testWhereSimple() {
+        OrqlRefItem item = parse("user(id = $id)");
+        Assert.assertTrue(item.getWhere() instanceof OrqlColumnExp);
+    }
 }
