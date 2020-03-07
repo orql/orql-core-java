@@ -12,6 +12,12 @@ import java.util.stream.Collectors;
 
 public class SqlGenerator {
 
+    private SqlParamTemplate sqlParamTemplate;
+
+    public void setSqlParamTemplate(SqlParamTemplate sqlParamTemplate) {
+        this.sqlParamTemplate = sqlParamTemplate;
+    }
+
     public String gen(SqlNode tree) {
         if (tree instanceof SqlQuery) return genQuery((SqlQuery) tree);
         if (tree instanceof SqlInsert) return genAdd((SqlInsert) tree);
@@ -158,7 +164,7 @@ public class SqlGenerator {
             return leftSql + " " + opStr + " " + genColumn(columnExp.getRightColumn());
         }
         if (columnExp.getRightParam() != null) {
-            return leftSql + " " + opStr + " $" + columnExp.getRightParam().getName();
+            return leftSql + " " + opStr + " " + genSqlParam(columnExp.getRightParam());
         }
         if (columnExp.getRightValue() instanceof OrqlNode.NullValue) {
 
@@ -180,6 +186,13 @@ public class SqlGenerator {
 
     private String genExpOp(ExpOp op) {
         return op.text();
+    }
+
+    private String genSqlParam(SqlParam param) {
+        if (sqlParamTemplate != null) {
+            return sqlParamTemplate.gen(param);
+        }
+        return "$" + param;
     }
 
     private String genSqlValue(Object value) {

@@ -20,6 +20,10 @@ public class OrqlToSql {
 
     private Map<OrqlRefItem, String> sqlCaches = new HashMap<>();
 
+    public SqlGenerator getSqlGenerator() {
+        return sqlGenerator;
+    }
+
     /**
      * 查询包装类
      */
