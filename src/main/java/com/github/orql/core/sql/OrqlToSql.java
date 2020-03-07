@@ -124,8 +124,7 @@ public class OrqlToSql {
         return sql;
     }
 
-    public String toQuery(String op, OrqlRefItem root, Integer limit, Long offset, List<QueryOrder> orders) {
-        SqlPage sqlPage = new SqlPage(offset, limit);
+    public String toQuery(String op, OrqlRefItem root, boolean page, List<QueryOrder> orders) {
         SchemaInfo rootSchema = root.getRef();
         String table = rootSchema.getTable();
         List<SqlJoin> joins = new ArrayList<>();
@@ -282,28 +281,33 @@ public class OrqlToSql {
         //FIXME 逻辑太乱，后续修复
         SqlQuery query;
         if (op.equals("count")) {
-            //分页
+            // 查询数量
             select.add(new SqlCountColumn(rootSchema.getIdField(), table));
             if (rootExp != null) where.add(0, rootExp);
             SqlForm from = new SqlTableForm(new SqlTable(table, table));
-            query = new SqlQuery(select, from, where, joins, sqlOrders, sqlPage);
-        } else if (hasArrayRef && sqlPage.getLimit() != null) {
+            query = new SqlQuery(select, from, where, joins, sqlOrders);
+        } else if (hasArrayRef && page) {
             //嵌套分页查询
             List<SqlColumn> innerSelect = Collections.singletonList(new SqlColumn("*"));
             List<SqlExp> innerWhere = rootExp != null ? Collections.singletonList(rootExp) : new ArrayList<>();
             SqlTableForm innerFrom = new SqlTableForm(new SqlTable(table));
-            SqlForm from = new SqlInnerFrom(new SqlQuery(innerSelect, innerFrom, innerWhere, new ArrayList<>(), rootSqlOrders, sqlPage));
-            query = new SqlQuery(select, from, where, joins, sqlOrders, null);
-        } else if (!hasArrayRef && sqlPage.getLimit() == null && op.equals("queryOne")) {
-            //无分页，单个查询，而且没有数组类型关联查询
+            SqlQuery innerQuery = new SqlQuery(innerSelect, innerFrom, innerWhere, new ArrayList<>(), rootSqlOrders);
+            innerQuery.setPage(true);
+            SqlForm from = new SqlInnerFrom(innerQuery);
+            query = new SqlQuery(select, from, where, joins, sqlOrders);
+            query.setPage(false);
+        } else if (!hasArrayRef && !page && op.equals("queryOne")) {
+            //没有设置分页，单个查询，而且没有数组类型关联查询
+            // 自动添加limit 1分页优化
             if (rootExp != null) where.add(0, rootExp);
             SqlForm from = new SqlTableForm(new SqlTable(table, table));
-            sqlPage = new SqlPage(null, 1);
-            query = new SqlQuery(select, from, where, joins, sqlOrders, sqlPage);
+            query = new SqlQuery(select, from, where, joins, sqlOrders);
+            query.setLimit1(true);
         } else {
             if (rootExp != null) where.add(0, rootExp);
             SqlForm from = new SqlTableForm(new SqlTable(table, table));
-            query = new SqlQuery(select, from, where, joins, sqlOrders, sqlPage);
+            query = new SqlQuery(select, from, where, joins, sqlOrders);
+            query.setPage(page);
         }
         return sqlGenerator.gen(query);
     }

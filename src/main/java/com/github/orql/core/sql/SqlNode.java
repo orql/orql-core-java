@@ -120,17 +120,24 @@ public abstract class SqlNode {
 
         private List<SqlJoin> joins;
 
-        private SqlPage page;
-
         private List<SqlOrder> orders;
 
-        public SqlQuery(List<SqlColumn> select, SqlForm from, List<SqlExp> where, List<SqlJoin> joins, List<SqlOrder> orders, SqlPage page) {
+        /**
+         * 是否分页
+         */
+        private boolean page;
+
+        /**
+         * 限制单个
+         */
+        private boolean limit1;
+
+        public SqlQuery(List<SqlColumn> select, SqlForm from, List<SqlExp> where, List<SqlJoin> joins, List<SqlOrder> orders) {
             this.select = select;
             this.from = from;
             this.where = where;
             this.joins = joins;
             this.orders = orders;
-            this.page = page;
         }
 
         public List<SqlColumn> getSelect() {
@@ -149,12 +156,24 @@ public abstract class SqlNode {
             return joins;
         }
 
-        public SqlPage getPage() {
+        public List<SqlOrder> getOrders() {
+            return orders;
+        }
+
+        public void setPage(boolean page) {
+            this.page = page;
+        }
+
+        public void setLimit1(boolean limit1) {
+            this.limit1 = limit1;
+        }
+
+        public boolean isPage() {
             return page;
         }
 
-        public List<SqlOrder> getOrders() {
-            return orders;
+        public boolean isLimit1() {
+            return limit1;
         }
     }
 
@@ -250,27 +269,6 @@ public abstract class SqlNode {
         public SqlExp getOn() {
             return on;
         }
-    }
-
-    public static class SqlPage {
-
-        private Long offset;
-
-        private Integer limit;
-
-        public SqlPage(Long offset, Integer limit) {
-            this.offset = offset;
-            this.limit = limit;
-        }
-
-        public Integer getLimit() {
-            return limit;
-        }
-
-        public Long getOffset() {
-            return offset;
-        }
-
     }
 
     public static class SqlOrder {

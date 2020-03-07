@@ -33,7 +33,7 @@ public class SqlGenerator {
                 genJoins(sqlQuery.getJoins()) +
                 genWhere(sqlQuery.getWhere()) +
                 genOrders(sqlQuery.getOrders()) +
-                genPage(sqlQuery.getPage());
+                genPage(sqlQuery.isLimit1(), sqlQuery.isPage());
     }
 
     private String genSelect(List<SqlColumn> select) {
@@ -85,9 +85,14 @@ public class SqlGenerator {
         return joinSql + join.getTable() + " as "  + join.getAlias() + " on " + expSql;
     }
 
-    private String genPage(SqlPage page) {
-        if (page == null || page.getLimit() == null) return "";
-        return page.getOffset() != null ? " limit " + page.getOffset() + ", " + page.getLimit() : " limit " + page.getLimit();
+    private String genPage(boolean limit1, boolean page) {
+        if (page) {
+            return " limit " + genSqlParam(new SqlParam("offset")) + ", " + genSqlParam(new SqlParam("limit"));
+        }
+        if (limit1) {
+            return " limit 1";
+        }
+        return "";
     }
 
     /**
