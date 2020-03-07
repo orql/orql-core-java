@@ -2,7 +2,7 @@ package com.github.orql.core.schema;
 
 import com.github.orql.core.Cascade;
 
-public class Association {
+public class AssociationInfo {
 
     public enum Type {
         BelongsTo,
@@ -95,10 +95,10 @@ public class Association {
 
     public static class Builder {
 
-        private Association association;
+        private AssociationInfo association;
 
         public Builder(String name, SchemaInfo current, SchemaInfo ref, Type type) {
-            association = new Association();
+            association = new AssociationInfo();
             association.name = name;
             association.ref = ref;
             association.current = current;

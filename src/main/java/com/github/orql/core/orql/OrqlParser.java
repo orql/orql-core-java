@@ -1,7 +1,7 @@
 package com.github.orql.core.orql;
 
 import com.github.orql.core.ExpOp;
-import com.github.orql.core.schema.Association;
+import com.github.orql.core.schema.AssociationInfo;
 import com.github.orql.core.schema.ColumnInfo;
 import com.github.orql.core.schema.SchemaInfo;
 import com.github.orql.core.schema.SchemaManager;
@@ -107,7 +107,7 @@ public class OrqlParser {
             return ignore ? new OrqlNode.OrqlIgnoreItem(column) : new OrqlNode.OrqlColumnItem(column);
         }
         if (parent.containsAssociation(name)) {
-            Association association = parent.getAssociation(name);
+            AssociationInfo association = parent.getAssociation(name);
             SchemaInfo ref = association.getRef();
             OrqlNode.OrqlExp where = visitWhere(ref);
             List<OrqlNode.OrqlItem> items = new ArrayList<>();

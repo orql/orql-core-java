@@ -159,11 +159,11 @@ public class SchemaManager {
             }
             BelongsTo belongsToAnnotation = field.getAnnotation(BelongsTo.class);
             if (belongsToAnnotation != null) {
-                Association.Builder builder = new Association.Builder(
+                AssociationInfo.Builder builder = new AssociationInfo.Builder(
                         field.getName(),
                         schema,
                         getSchema(field),
-                        Association.Type.BelongsTo);
+                        AssociationInfo.Type.BelongsTo);
                 // ref key
                 if (! belongsToAnnotation.refKey().equals("")) {
                     builder.refKey(belongsToAnnotation.refKey());
@@ -175,11 +175,11 @@ public class SchemaManager {
             }
             HasOne hasOneAnnotation = field.getAnnotation(HasOne.class);
             if (hasOneAnnotation != null) {
-                Association.Builder builder = new Association.Builder(
+                AssociationInfo.Builder builder = new AssociationInfo.Builder(
                         field.getName(),
                         schema,
                         getSchema(field),
-                        Association.Type.HasOne);
+                        AssociationInfo.Type.HasOne);
                 // ref key
                 if (! hasOneAnnotation.refKey().equals("")) {
                     builder.refKey(hasOneAnnotation.refKey());
@@ -194,11 +194,11 @@ public class SchemaManager {
             }
             HasMany hasManyAnnotation = field.getAnnotation(HasMany.class);
             if (hasManyAnnotation != null) {
-                Association.Builder builder = new Association.Builder(
+                AssociationInfo.Builder builder = new AssociationInfo.Builder(
                         field.getName(),
                         schema,
                         getSchema(field),
-                        Association.Type.HasMany);
+                        AssociationInfo.Type.HasMany);
                 // ref key
                 if (! hasManyAnnotation.refKey().equals("")) {
                     builder.refKey(hasManyAnnotation.refKey());
@@ -213,11 +213,11 @@ public class SchemaManager {
             }
             BelongsToMany belongsToManyAnnotation = field.getAnnotation(BelongsToMany.class);
             if (belongsToManyAnnotation != null) {
-                Association.Builder builder = new Association.Builder(
+                AssociationInfo.Builder builder = new AssociationInfo.Builder(
                         field.getName(),
                         schema,
                         getSchema(field),
-                        Association.Type.BelongsToMany);
+                        AssociationInfo.Type.BelongsToMany);
                 // middle
                 Class<?> middleClass = belongsToManyAnnotation.middle();
                 Schema middleSchema = middleClass.getAnnotation(Schema.class);

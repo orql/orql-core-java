@@ -55,8 +55,8 @@ public class OrqlToSql {
                 columns.add(new SqlColumn(columnItem.getField()));
                 params.add(new SqlParam(columnItem.getName()));
             } else if (item instanceof OrqlRefItem) {
-                Association association = ((OrqlRefItem) item).getAssociation();
-                if (association.getType() == Association.Type.BelongsTo) {
+                AssociationInfo association = ((OrqlRefItem) item).getAssociation();
+                if (association.getType() == AssociationInfo.Type.BelongsTo) {
                     columns.add(new SqlColumn(association.getRefKey()));
                     params.add(new SqlParam(association.getRefKey()));
                 }
@@ -101,7 +101,7 @@ public class OrqlToSql {
             } else if (item instanceof OrqlColumnItem) {
                 sets.add(new SqlColumn(((OrqlColumnItem) item).getColumn().getField()));
             } else if (item instanceof OrqlRefItem) {
-                Association association = ((OrqlRefItem) item).getAssociation();
+                AssociationInfo association = ((OrqlRefItem) item).getAssociation();
                 switch (association.getType()) {
                     case BelongsTo:
                         // user belongsTo role
@@ -169,9 +169,9 @@ public class OrqlToSql {
             for (OrqlItem child : currentItem.getChildren()) {
                 hasSelect = true;
                 if (child instanceof OrqlRefItem) {
-                    Association association = currentSchema.getAssociation(child.getName());
+                    AssociationInfo association = currentSchema.getAssociation(child.getName());
 
-                    if (association.getType() == Association.Type.HasMany || association.getType() == Association.Type.BelongsToMany) {
+                    if (association.getType() == AssociationInfo.Type.HasMany || association.getType() == AssociationInfo.Type.BelongsToMany) {
                         if (!((OrqlRefItem) child).getChildren().isEmpty()) {
                             //存在数组类型关联
                             hasArrayRef = true;
@@ -183,8 +183,8 @@ public class OrqlToSql {
                     //入栈
                     queryStack.push(new QueryWrapper((OrqlRefItem) child, childPath));
                     SqlJoinType joinType = association.isRequired() ? SqlJoinType.Inner : SqlJoinType.Left;
-                    Association.Type type = association.getType();
-                    if (type == Association.Type.HasMany) {
+                    AssociationInfo.Type type = association.getType();
+                    if (type == AssociationInfo.Type.HasMany) {
                         // role hasMany user
                         // user.roleId = role.id
                         SqlExp on = new SqlColumnExp(
@@ -192,7 +192,7 @@ public class OrqlToSql {
                                 ExpOp.Eq,
                                 new SqlColumn(childIdColumn.getField(), currentPath));
                         joins.add(new SqlJoin(childSchema.getTable(), childPath, joinType, on));
-                    } else if (type == Association.Type.HasOne) {
+                    } else if (type == AssociationInfo.Type.HasOne) {
                         // user hasOne info
                         // info.userId = user.id
                         SqlExp on = new SqlColumnExp(
@@ -200,7 +200,7 @@ public class OrqlToSql {
                                 ExpOp.Eq,
                                 new SqlColumn(childIdColumn.getField(), currentPath));
                         joins.add(new SqlJoin(childSchema.getTable(), childPath, joinType, on));
-                    } else if (type == Association.Type.BelongsTo) {
+                    } else if (type == AssociationInfo.Type.BelongsTo) {
                         // user belongsTo role
                         // role.id = user.roleId
                         SqlExp on = new SqlColumnExp(
@@ -208,7 +208,7 @@ public class OrqlToSql {
                                 ExpOp.Eq,
                                 new SqlColumn(association.getRefKey(), currentPath));
                         joins.add(new SqlJoin(childSchema.getTable(), childPath, joinType, on));
-                    } else if (type == Association.Type.BelongsToMany) {
+                    } else if (type == AssociationInfo.Type.BelongsToMany) {
                         // post belongsToMany tag, middle postTags
                         // postTags.postId = post.id
                         // postTags.tagId = tag.id

@@ -40,7 +40,7 @@ public class SchemaInfo {
     /**
      * 关联对象list
      */
-    private List<Association> associations = new ArrayList<>();
+    private List<AssociationInfo> associations = new ArrayList<>();
 
     /**
      * 关联对象名list
@@ -96,7 +96,7 @@ public class SchemaInfo {
         return null;
     }
 
-    public Association getAssociation(String name) {
+    public AssociationInfo getAssociation(String name) {
         int index = associationNames.indexOf(name);
         if (index >= 0) {
             return associations.get(index);
@@ -104,12 +104,12 @@ public class SchemaInfo {
         return null;
     }
 
-    public List<Association> getAssociations() {
+    public List<AssociationInfo> getAssociations() {
         return associations;
     }
 
-    public Association getAssociationByRefKey(String refKey) {
-        for (Association association : associations) {
+    public AssociationInfo getAssociationByRefKey(String refKey) {
+        for (AssociationInfo association : associations) {
             if (association.getRefKey().equals(refKey)) return association;
         }
         return null;
@@ -146,7 +146,7 @@ public class SchemaInfo {
         return this;
     }
 
-    public SchemaInfo addAssociation(Association association) {
+    public SchemaInfo addAssociation(AssociationInfo association) {
         associationNames.add(association.getName());
         this.associations.add(association);
         switch (association.getType()) {
@@ -167,20 +167,20 @@ public class SchemaInfo {
         return this;
     }
 
-    public Association.Builder belongsTo(String name, SchemaInfo ref) {
-        return new Association.Builder(name, this, ref, Association.Type.BelongsTo);
+    public AssociationInfo.Builder belongsTo(String name, SchemaInfo ref) {
+        return new AssociationInfo.Builder(name, this, ref, AssociationInfo.Type.BelongsTo);
     }
 
-    public Association.Builder hasOne(String name, SchemaInfo ref) {
-        return new Association.Builder(name, this, ref, Association.Type.HasOne);
+    public AssociationInfo.Builder hasOne(String name, SchemaInfo ref) {
+        return new AssociationInfo.Builder(name, this, ref, AssociationInfo.Type.HasOne);
     }
 
-    public Association.Builder hasMany(String name, SchemaInfo ref) {
-        return new Association.Builder(name, this, ref, Association.Type.HasMany);
+    public AssociationInfo.Builder hasMany(String name, SchemaInfo ref) {
+        return new AssociationInfo.Builder(name, this, ref, AssociationInfo.Type.HasMany);
     }
 
-    public Association.Builder belongsToMany(String name, SchemaInfo ref, String middle) {
-        Association.Builder builder = new Association.Builder(name, this, ref, Association.Type.HasMany);
+    public AssociationInfo.Builder belongsToMany(String name, SchemaInfo ref, String middle) {
+        AssociationInfo.Builder builder = new AssociationInfo.Builder(name, this, ref, AssociationInfo.Type.HasMany);
         builder.middle(middle);
         return builder;
     }

@@ -1,7 +1,7 @@
 package com.github.orql.core.orql;
 
 import com.github.orql.core.ExpOp;
-import com.github.orql.core.schema.Association;
+import com.github.orql.core.schema.AssociationInfo;
 import com.github.orql.core.schema.ColumnInfo;
 import com.github.orql.core.schema.SchemaInfo;
 
@@ -36,13 +36,13 @@ public class OrqlNode {
 
         private SchemaInfo ref;
 
-        private Association association;
+        private AssociationInfo association;
 
         private OrqlExp where;
 
         private List<OrqlItem> children;
 
-        public OrqlRefItem(String name, SchemaInfo ref, Association association, List<OrqlItem> children, OrqlExp where) {
+        public OrqlRefItem(String name, SchemaInfo ref, AssociationInfo association, List<OrqlItem> children, OrqlExp where) {
             super(name);
             this.ref = ref;
             this.association = association;
@@ -54,7 +54,7 @@ public class OrqlNode {
             return ref;
         }
 
-        public Association getAssociation() {
+        public AssociationInfo getAssociation() {
             return association;
         }
 
@@ -67,8 +67,8 @@ public class OrqlNode {
         }
 
         public Boolean isArray() {
-            return association.getType() == Association.Type.HasMany
-                    || association.getType() == Association.Type.BelongsToMany;
+            return association.getType() == AssociationInfo.Type.HasMany
+                    || association.getType() == AssociationInfo.Type.BelongsToMany;
         }
     }
 
