@@ -2,8 +2,14 @@ package com.github.orql.core.mapper;
 
 import java.util.List;
 
+/**
+ * mapper跟节点
+ */
 public class ResultRoot {
 
+    /**
+     * id键
+     */
     private ResultId id;
 
     private List<Result> columns;
