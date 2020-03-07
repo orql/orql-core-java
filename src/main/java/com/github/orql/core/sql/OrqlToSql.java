@@ -266,9 +266,16 @@ public class OrqlToSql {
                 List<SqlColumn> columns = new ArrayList<>();
                 for (String column : order.getColumns()) {
                     int index = column.lastIndexOf('.');
-                    String currentPath = column.substring(0, index);
-                    // FIXME field
-                    String name = column.substring(index);
+                    String currentPath = null;
+                    String name = null;
+                    if (index == -1) {
+                        currentPath = rootSchema.getTable();
+                        name = rootSchema.getColumn(column).getField();
+                    } else {
+                        currentPath = column.substring(0, index);
+                        name = column.substring(index + 1);
+                    }
+                    // FIXME 多层column未支持
                     columns.add(new SqlColumn(name, currentPath));
                 }
                 SqlOrder sqlOrder = new SqlOrder(columns, order.getSort());
