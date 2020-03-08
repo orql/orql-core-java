@@ -92,7 +92,7 @@ public class OrqlToSql {
     public String toUpdate(OrqlRefItem root) {
         if (sqlCaches.containsKey(root)) return sqlCaches.get(root);
         SqlExp exp = genExp(root.getWhere(), root.getRef().getTable());
-        List<SqlColumn> sets = new ArrayList<>();
+        List<SqlUpdateColumn> columns = new ArrayList<>();
         boolean selectAll = false;
         List<String> ignores = null;
         for (OrqlItem item : root.getChildren()) {
@@ -100,17 +100,21 @@ public class OrqlToSql {
                 selectAll = true;
                 ignores = new ArrayList<>();
             } else if (item instanceof OrqlIgnoreItem) {
-                // FIXME 可能有空指针异常
+                // 没有选择全部忽略，抛出异常
+                if (ignores == null) {
+                    throw new SqlGenException();
+                }
                 ignores.add(item.getName());
             } else if (item instanceof OrqlColumnItem) {
-                sets.add(new SqlColumn(((OrqlColumnItem) item).getColumn().getField()));
+                columns.add(new SqlUpdateColumn(((OrqlColumnItem) item).getColumn().getField(), ((OrqlColumnItem) item).getColumn().getName()));
             } else if (item instanceof OrqlRefItem) {
                 AssociationInfo association = ((OrqlRefItem) item).getAssociation();
                 switch (association.getType()) {
                     case BelongsTo:
                         // user belongsTo role
-                        // roleId = #role.id
-                        sets.add(new SqlColumn(((OrqlRefItem) item).getAssociation().getRefKey()));
+                        // roleId = $role.id
+                        String param = association.getName() + "." + association.getRefId().getName();
+                        columns.add(new SqlUpdateColumn(((OrqlRefItem) item).getAssociation().getRefKey(), param));
                         break;
                 }
             }
@@ -119,10 +123,10 @@ public class OrqlToSql {
             for (ColumnInfo column : root.getRef().getColumns()) {
                 if (column.isRefKey()) continue;
                 if (ignores.contains(column.getName())) continue;
-                sets.add(new SqlColumn(column.getField()));
+                columns.add(new SqlUpdateColumn(column.getField(), column.getName()));
             }
         }
-        SqlUpdate update = new SqlUpdate(root.getRef().getTable(), exp, sets);
+        SqlUpdate update = new SqlUpdate(root.getRef().getTable(), exp, columns);
         String sql = sqlGenerator.gen(update);
         sqlCaches.put(root, sql);
         return sql;

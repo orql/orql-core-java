@@ -142,7 +142,7 @@ public class SqlGenerator {
     private String genUpdate(SqlUpdate update) {
         return "update " + update.getTable() +
                 " set " +
-                update.getSets().stream().map(set -> set.getName() + " = $" + set.getName()).collect(Collectors.joining(", ")) +
+                update.getColumns().stream().map(column -> column.getName() + " = " + genSqlParam(column.getParam())).collect(Collectors.joining(", ")) +
                 " where " + genExp(update.getWhere());
     }
 

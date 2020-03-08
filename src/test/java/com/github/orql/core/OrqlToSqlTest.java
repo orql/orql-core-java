@@ -1,7 +1,5 @@
 package com.github.orql.core;
 
-import com.github.orql.core.orql.OrqlNode;
-import com.github.orql.core.orql.OrqlParser;
 import com.github.orql.core.sql.OrqlToSql;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -14,13 +12,6 @@ public class OrqlToSqlTest extends TestBase {
     private static final Logger logger = LoggerFactory.getLogger(OrqlToSqlTest.class);
 
     private OrqlToSql orqlToSql = new OrqlToSql();
-
-    private OrqlParser orqlParser = new OrqlParser(schemaManager);
-
-    private OrqlNode.OrqlRefItem parse(String orql) {
-        OrqlParser parser = new OrqlParser(schemaManager);
-        return parser.parse(orql).getRoot();
-    }
 
     @Test
     public void testAdd() {
@@ -48,6 +39,48 @@ public class OrqlToSqlTest extends TestBase {
         String sql = orqlToSql.toAdd(parse("user : {name, password, role}"));
         logger.info("sql: {}", sql);
         assertEquals("insert into user (name, password, role_id) values ($name, $password, $role.id)", sql);
+    }
+
+    @Test
+    public void testDelete() {
+        String sql = orqlToSql.toDelete(parse("user(id = $id)"));
+        logger.info("sql: {}", sql);
+        assertEquals("delete from user where user.id = $id", sql);
+    }
+
+    @Test
+    public void testDeleteIgnoreColumn() {
+        String sql = orqlToSql.toDelete(parse("user(id = $id): {name}"));
+        logger.info("sql: {}", sql);
+        assertEquals("delete from user where user.id = $id", sql);
+    }
+
+    @Test
+    public void testUpdate() {
+        String sql = orqlToSql.toUpdate(parse("user(id = $id): {name}"));
+        logger.info("sql: {}", sql);
+        assertEquals("update user set name = $name where user.id = $id", sql);
+    }
+
+    @Test
+    public void testUpdateAll() {
+        String sql = orqlToSql.toUpdate(parse("user(id = $id): {*}"));
+        logger.info("sql: {}", sql);
+        assertEquals("update user set id = $id, name = $name, password = $password where user.id = $id", sql);
+    }
+
+    @Test
+    public void testUpdateAllAndIgnoreId() {
+        String sql = orqlToSql.toUpdate(parse("user(id = $id): {*, !id}"));
+        logger.info("sql: {}", sql);
+        assertEquals("update user set name = $name, password = $password where user.id = $id", sql);
+    }
+
+    @Test
+    public void testUpdateBelongsTo() {
+        String sql = orqlToSql.toUpdate(parse("user(id = $id) : {name, password, role}"));
+        logger.info("sql: {}", sql);
+        assertEquals("update user set name = $name, password = $password, role_id = $role.id where user.id = $id", sql);
     }
 
 }

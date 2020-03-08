@@ -89,12 +89,12 @@ public abstract class SqlNode {
 
         private SqlExp where;
 
-        private List<SqlColumn> sets;
+        private List<SqlUpdateColumn> columns;
 
-        public SqlUpdate(String table, SqlExp where, List<SqlColumn> sets) {
+        public SqlUpdate(String table, SqlExp where, List<SqlUpdateColumn> columns) {
             this.table = table;
             this.where = where;
-            this.sets = sets;
+            this.columns = columns;
         }
 
         public String getTable() {
@@ -105,8 +105,8 @@ public abstract class SqlNode {
             return where;
         }
 
-        public List<SqlColumn> getSets() {
-            return sets;
+        public List<SqlUpdateColumn> getColumns() {
+            return columns;
         }
     }
 
@@ -320,6 +320,20 @@ public abstract class SqlNode {
 
         public void setTable(String table) {
             this.table = table;
+        }
+    }
+
+    public static class SqlUpdateColumn extends SqlColumn {
+
+        private SqlParam param;
+
+        public SqlUpdateColumn(String name, String param) {
+            super(name);
+            this.param = new SqlParam(param);
+        }
+
+        public SqlParam getParam() {
+            return param;
         }
     }
 
