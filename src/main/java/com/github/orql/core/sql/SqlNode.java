@@ -293,17 +293,26 @@ public abstract class SqlNode {
 
     public static class SqlColumn {
 
+        /**
+         * 列名
+         */
         private String name;
 
+        /**
+         * 表名
+         */
         private String table;
 
-        public SqlColumn(String name) {
-            this.name = name;
-        }
+        /**
+         * 列前缀，不带_
+         * columnPrefix_name
+         */
+        private String columnPrefix;
 
-        public SqlColumn(String name, String table) {
+        public SqlColumn(String name, String table, String columnPrefix) {
             this.name = name;
             this.table = table;
+            this.columnPrefix = columnPrefix;
         }
 
         public String getName() {
@@ -321,6 +330,14 @@ public abstract class SqlNode {
         public void setTable(String table) {
             this.table = table;
         }
+
+        public String getColumnPrefix() {
+            return columnPrefix;
+        }
+
+        public void setColumnPrefix(String columnPrefix) {
+            this.columnPrefix = columnPrefix;
+        }
     }
 
     public static class SqlUpdateColumn extends SqlColumn {
@@ -328,7 +345,7 @@ public abstract class SqlNode {
         private SqlParam param;
 
         public SqlUpdateColumn(String name, String param) {
-            super(name);
+            super(name, null, null);
             this.param = new SqlParam(param);
         }
 
@@ -339,12 +356,8 @@ public abstract class SqlNode {
 
     public static class SqlCountColumn extends SqlColumn {
 
-        public SqlCountColumn(String name) {
-            super(name);
-        }
-
         public SqlCountColumn(String name, String table) {
-            super(name, table);
+            super(name, table, null);
         }
     }
 

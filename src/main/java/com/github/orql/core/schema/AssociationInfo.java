@@ -23,6 +23,9 @@ public class AssociationInfo {
 
     private boolean required = true;
 
+    /**
+     * 多对多中间表
+     */
     private String middle;
 
     private String middleKey;

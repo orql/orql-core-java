@@ -83,4 +83,11 @@ public class OrqlToSqlTest extends TestBase {
         assertEquals("update user set name = $name, password = $password, role_id = $role.id where id = $id", sql);
     }
 
+    @Test
+    public void testQuerySimple() {
+        String sql = orqlToSql.toQuery(QueryOp.QueryOne, parse("user(id = $id) : {name}"), false, null);
+        logger.info("sql: {}", sql);
+        assertEquals("select user.name as name from user as user where id = $id limit 1", sql);
+    }
+
 }

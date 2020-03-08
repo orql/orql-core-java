@@ -46,8 +46,11 @@ public class SqlGenerator {
         if (sqlColumn instanceof SqlCountColumn) {
             return "count(" + sqlColumn.getTable() + "." + sqlColumn.getName() + ")";
         }
+        if (sqlColumn.getColumnPrefix() != null) {
+            return sqlColumn.getColumnPrefix() + "." + sqlColumn.getName() + " as " + sqlColumn.getColumnPrefix() + "_" + sqlColumn.getName();
+        }
         if (sqlColumn.getTable() != null) {
-            return sqlColumn.getTable() + "." + sqlColumn.getName() + " as " + sqlColumn.getTable() + "_" + sqlColumn.getName();
+            return sqlColumn.getTable() + "." + sqlColumn.getName() + " as " + sqlColumn.getName();
         }
         return sqlColumn.getName();
     }
@@ -184,8 +187,8 @@ public class SqlGenerator {
     }
 
     private String genColumn(SqlColumn column) {
-        return column.getTable() != null
-                ? column.getTable() + "." + column.getName()
+        return column.getColumnPrefix() != null
+                ? column.getColumnPrefix() + "." + column.getName()
                 : column.getName();
     }
 
