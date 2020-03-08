@@ -1,9 +1,6 @@
 package com.github.orql.core.schema;
 
-import com.github.orql.core.annotation.Column;
-import com.github.orql.core.annotation.HasMany;
-import com.github.orql.core.annotation.HasOne;
-import com.github.orql.core.annotation.Schema;
+import com.github.orql.core.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +21,9 @@ public class User {
 
     @HasMany(refKey = "authorId")
     private List<Post> posts;
+
+    @BelongsTo(refKey = "role_id", required = false)
+    private Role role;
 
     public Long getId() {
         return id;
@@ -63,5 +63,13 @@ public class User {
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

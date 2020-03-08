@@ -46,8 +46,11 @@ public class SqlGenerator {
         if (sqlColumn instanceof SqlCountColumn) {
             return "count(" + sqlColumn.getTable() + "." + sqlColumn.getName() + ")";
         }
+        if (sqlColumn.getColumnPrefix() != null) {
+            return sqlColumn.getColumnPrefix() + "." + sqlColumn.getName() + " as " + sqlColumn.getColumnPrefix() + "_" + sqlColumn.getName();
+        }
         if (sqlColumn.getTable() != null) {
-            return sqlColumn.getTable() + "." + sqlColumn.getName() + " as " + sqlColumn.getTable() + "_" + sqlColumn.getName();
+            return sqlColumn.getTable() + "." + sqlColumn.getName() + " as " + sqlColumn.getName();
         }
         return sqlColumn.getName();
     }
@@ -128,9 +131,9 @@ public class SqlGenerator {
 
     private String genAdd(SqlInsert insert) {
         return "insert into " + insert.getTable() +
-                "(" + insert.getColumns().stream().map(SqlColumn::getName).collect(Collectors.joining(", ")) + ")" +
-                " values " +
-                "(" + insert.getParams().stream().map(this::genSqlParam).collect(Collectors.joining(", ")) + ")";
+                " (" + insert.getColumns().stream().map(SqlColumn::getName).collect(Collectors.joining(", ")) + ")" +
+                " values" +
+                " (" + insert.getParams().stream().map(this::genSqlParam).collect(Collectors.joining(", ")) + ")";
     }
 
     private String genDelete(SqlDelete delete) {
@@ -142,7 +145,7 @@ public class SqlGenerator {
     private String genUpdate(SqlUpdate update) {
         return "update " + update.getTable() +
                 " set " +
-                update.getSets().stream().map(set -> set.getName() + " = $" + set.getName()).collect(Collectors.joining(", ")) +
+                update.getColumns().stream().map(column -> column.getName() + " = " + genSqlParam(column.getParam())).collect(Collectors.joining(", ")) +
                 " where " + genExp(update.getWhere());
     }
 
@@ -184,9 +187,14 @@ public class SqlGenerator {
     }
 
     private String genColumn(SqlColumn column) {
-        return column.getTable() != null
-                ? column.getTable() + "." + column.getName()
-                : column.getName();
+        if (column.getColumnPrefix() != null) {
+            return column.getColumnPrefix() + "." + column.getName();
+        }
+        // 保留没有前缀的table前缀，避免列歧义
+        if (column.getTable() != null) {
+            return column.getTable() + "." + column.getName();
+        }
+        return column.getName();
     }
 
     private String genExpOp(ExpOp op) {
@@ -197,7 +205,7 @@ public class SqlGenerator {
         if (sqlParamTemplate != null) {
             return sqlParamTemplate.gen(param);
         }
-        return "$" + param;
+        return "$" + param.getName();
     }
 
     private String genSqlValue(Object value) {

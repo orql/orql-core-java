@@ -1,26 +1,10 @@
 package com.github.orql.core;
 
 import com.github.orql.core.orql.OrqlNode.*;
-import com.github.orql.core.orql.OrqlParser;
-import com.github.orql.core.schema.SchemaManager;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class OrqlParserTest {
-
-    private SchemaManager schemaManager;
-
-    @Before
-    public void init() {
-        schemaManager = new SchemaManager();
-        schemaManager.scanPackage("com.github.orql.core.schema");
-    }
-
-    private OrqlRefItem parse(String orql) {
-        OrqlParser parser = new OrqlParser(schemaManager);
-        return parser.parse(orql).getRoot();
-    }
+public class OrqlParserTest extends TestBase {
 
     @Test
     public void testSimple() {

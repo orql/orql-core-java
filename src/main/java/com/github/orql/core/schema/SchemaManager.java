@@ -220,8 +220,8 @@ public class SchemaManager {
                         AssociationInfo.Type.BelongsToMany);
                 // middle
                 Class<?> middleClass = belongsToManyAnnotation.middle();
-                Schema middleSchema = middleClass.getAnnotation(Schema.class);
-                builder.middle(middleSchema.name());
+                SchemaInfo middleSchema = getSchema(middleClass);
+                builder.middleTable(middleSchema.getTable());
                 // middle key
                 if (! belongsToManyAnnotation.middleKey().equals("")) {
                     builder.middleKey(belongsToManyAnnotation.middleKey());

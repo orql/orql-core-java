@@ -23,7 +23,10 @@ public class AssociationInfo {
 
     private boolean required = true;
 
-    private String middle;
+    /**
+     * 多对多中间表
+     */
+    private String middleTable;
 
     private String middleKey;
 
@@ -65,8 +68,8 @@ public class AssociationInfo {
         return required;
     }
 
-    public String getMiddle() {
-        return middle;
+    public String getMiddleTable() {
+        return middleTable;
     }
 
     public String getMiddleKey() {
@@ -115,8 +118,8 @@ public class AssociationInfo {
             return this;
         }
 
-        public Builder middle(String middle) {
-            association.middle = middle;
+        public Builder middleTable(String middleTable) {
+            association.middleTable = middleTable;
             return this;
         }
 
@@ -164,6 +167,17 @@ public class AssociationInfo {
                     }
                     break;
                 case BelongsToMany:
+                    // post belongsToMany tag, middle postTags
+                    // postTags.postId = post.id
+                    // postTags.tagId = tag.id
+                    // middleKey = postId currentSchema + Id
+                    // refMiddleKey = tagId refSchema + Id
+                    if (association.middleKey == null) {
+                        association.middleKey = association.current.getName() + "Id";
+                    }
+                    if (association.refMiddleKey == null) {
+                        association.refMiddleKey = association.ref.getName() + "Id";
+                    }
                     break;
             }
             association.current.addAssociation(association);

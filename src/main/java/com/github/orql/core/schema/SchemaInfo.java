@@ -179,9 +179,9 @@ public class SchemaInfo {
         return new AssociationInfo.Builder(name, this, ref, AssociationInfo.Type.HasMany);
     }
 
-    public AssociationInfo.Builder belongsToMany(String name, SchemaInfo ref, String middle) {
+    public AssociationInfo.Builder belongsToMany(String name, SchemaInfo ref, String middleTable) {
         AssociationInfo.Builder builder = new AssociationInfo.Builder(name, this, ref, AssociationInfo.Type.HasMany);
-        builder.middle(middle);
+        builder.middleTable(middleTable);
         return builder;
     }
 
