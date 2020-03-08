@@ -58,7 +58,8 @@ public class OrqlToSql {
                 AssociationInfo association = ((OrqlRefItem) item).getAssociation();
                 if (association.getType() == AssociationInfo.Type.BelongsTo) {
                     columns.add(new SqlColumn(association.getRefKey()));
-                    params.add(new SqlParam(association.getRefKey()));
+                    String param = association.getName() + "." + association.getRefId().getName();
+                    params.add(new SqlParam(param));
                 }
             }
         }
@@ -144,7 +145,7 @@ public class OrqlToSql {
         while (!queryStack.isEmpty()) {
             QueryWrapper queryWrapper = queryStack.pop();
             OrqlRefItem currentItem = queryWrapper.item;
-            String currentPath = queryWrapper.path;
+            String columnPrefix = queryWrapper.path;
             SchemaInfo currentSchema = currentItem.getRef();
             ColumnInfo idColumn = currentSchema.getIdColumn();
             // 是否有主键
@@ -157,8 +158,8 @@ public class OrqlToSql {
             List<String> ignores = null;
             if (currentItem.getWhere() != null) {
                 if (currentItem.getWhere() != null) {
-                    SqlExp exp = genExp(currentItem.getWhere(), currentPath);
-                    if (currentPath.equals(table)) {
+                    SqlExp exp = genExp(currentItem.getWhere(), columnPrefix);
+                    if (columnPrefix.equals(table)) {
                         // root where
                         rootExp = exp;
                     } else {
@@ -179,7 +180,7 @@ public class OrqlToSql {
                     }
                     SchemaInfo childSchema = ((OrqlRefItem) child).getRef();
                     ColumnInfo childIdColumn = childSchema.getIdColumn();
-                    String childPath = currentPath + Constants.SqlSplit + child.getName();
+                    String childPath = columnPrefix + Constants.SqlSplit + child.getName();
                     //入栈
                     queryStack.push(new QueryWrapper((OrqlRefItem) child, childPath));
                     SqlJoinType joinType = association.isRequired() ? SqlJoinType.Inner : SqlJoinType.Left;
@@ -190,7 +191,7 @@ public class OrqlToSql {
                         SqlExp on = new SqlColumnExp(
                                 new SqlColumn(association.getRefKey(), childPath),
                                 ExpOp.Eq,
-                                new SqlColumn(childIdColumn.getField(), currentPath));
+                                new SqlColumn(childIdColumn.getField(), columnPrefix));
                         joins.add(new SqlJoin(childSchema.getTable(), childPath, joinType, on));
                     } else if (type == AssociationInfo.Type.HasOne) {
                         // user hasOne info
@@ -198,7 +199,7 @@ public class OrqlToSql {
                         SqlExp on = new SqlColumnExp(
                                 new SqlColumn(association.getRefKey(), childPath),
                                 ExpOp.Eq,
-                                new SqlColumn(childIdColumn.getField(), currentPath));
+                                new SqlColumn(childIdColumn.getField(), columnPrefix));
                         joins.add(new SqlJoin(childSchema.getTable(), childPath, joinType, on));
                     } else if (type == AssociationInfo.Type.BelongsTo) {
                         // user belongsTo role
@@ -206,7 +207,7 @@ public class OrqlToSql {
                         SqlExp on = new SqlColumnExp(
                                 new SqlColumn(association.getRefId().getField(), childPath),
                                 ExpOp.Eq,
-                                new SqlColumn(association.getRefKey(), currentPath));
+                                new SqlColumn(association.getRefKey(), columnPrefix));
                         joins.add(new SqlJoin(childSchema.getTable(), childPath, joinType, on));
                     } else if (type == AssociationInfo.Type.BelongsToMany) {
                         // post belongsToMany tag, middle postTags
@@ -218,7 +219,7 @@ public class OrqlToSql {
                         SqlExp leftOn = new SqlColumnExp(
                                 new SqlColumn(association.getMiddleKey(), middlePath),
                                 ExpOp.Eq,
-                                new SqlColumn(childIdColumn.getField(), currentPath));
+                                new SqlColumn(childIdColumn.getField(), columnPrefix));
                         joins.add(new SqlJoin(association.getMiddle(), middlePath, joinType, leftOn));
                         SqlExp rightOn = new SqlColumnExp(
                                 new SqlColumn(targetSchema.getIdColumn().getField(), childPath),
@@ -239,9 +240,9 @@ public class OrqlToSql {
                     if (!op.equals("count")) {
                         if (child instanceof OrqlColumnItem) {
                             OrqlColumnItem columnItem = (OrqlColumnItem) child;
-                            select.add(new SqlColumn(columnItem.getColumn().getField(), currentPath));
+                            select.add(new SqlColumn(columnItem.getColumn().getField(), columnPrefix));
                         } else {
-                            select.add(new SqlColumn(child.getName(), currentPath));
+                            select.add(new SqlColumn(child.getName(), columnPrefix));
                         }
                     }
                 }
@@ -251,13 +252,13 @@ public class OrqlToSql {
                     if (column.isRefKey()) continue;
                     if (ignores.contains(column.getName())) continue;
                     if (column.isPrivateKey()) hasId = true;
-                    select.add(new SqlColumn(column.getField(), currentPath));
+                    select.add(new SqlColumn(column.getField(), columnPrefix));
                 }
             }
             if (!hasId) {
                 if (!op.equals("count") && hasSelect) {
                     //插入id
-                    select.add(new SqlColumn(idColumn.getField(), currentPath));
+                    select.add(new SqlColumn(idColumn.getField(), columnPrefix));
                 }
             }
         }
