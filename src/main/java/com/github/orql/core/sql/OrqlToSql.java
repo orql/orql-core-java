@@ -82,7 +82,7 @@ public class OrqlToSql {
 
     public String toDelete(OrqlRefItem root) {
         if (sqlCaches.containsKey(root)) return sqlCaches.get(root);
-        SqlExp exp = genExp(root.getWhere(), root.getRef().getTable());
+        SqlExp exp = genExp(root.getWhere(), null);
         SqlDelete delete = new SqlDelete(root.getRef().getTable(), exp);
         String sql = sqlGenerator.gen(delete);
         sqlCaches.put(root, sql);
@@ -91,7 +91,7 @@ public class OrqlToSql {
 
     public String toUpdate(OrqlRefItem root) {
         if (sqlCaches.containsKey(root)) return sqlCaches.get(root);
-        SqlExp exp = genExp(root.getWhere(), root.getRef().getTable());
+        SqlExp exp = genExp(root.getWhere(), null);
         List<SqlUpdateColumn> columns = new ArrayList<>();
         boolean selectAll = false;
         List<String> ignores = null;
@@ -327,6 +327,12 @@ public class OrqlToSql {
         return sqlGenerator.gen(query);
     }
 
+    /**
+     * 生成sql表达式
+     * @param orqlExp
+     * @param path 根节点为空
+     * @return
+     */
     private SqlExp genExp(OrqlExp orqlExp, String path) {
         if (orqlExp instanceof OrqlAndExp) {
             return new SqlAndExp(

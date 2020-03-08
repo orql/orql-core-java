@@ -45,42 +45,42 @@ public class OrqlToSqlTest extends TestBase {
     public void testDelete() {
         String sql = orqlToSql.toDelete(parse("user(id = $id)"));
         logger.info("sql: {}", sql);
-        assertEquals("delete from user where user.id = $id", sql);
+        assertEquals("delete from user where id = $id", sql);
     }
 
     @Test
     public void testDeleteIgnoreColumn() {
         String sql = orqlToSql.toDelete(parse("user(id = $id): {name}"));
         logger.info("sql: {}", sql);
-        assertEquals("delete from user where user.id = $id", sql);
+        assertEquals("delete from user where id = $id", sql);
     }
 
     @Test
     public void testUpdate() {
         String sql = orqlToSql.toUpdate(parse("user(id = $id): {name}"));
         logger.info("sql: {}", sql);
-        assertEquals("update user set name = $name where user.id = $id", sql);
+        assertEquals("update user set name = $name where id = $id", sql);
     }
 
     @Test
     public void testUpdateAll() {
         String sql = orqlToSql.toUpdate(parse("user(id = $id): {*}"));
         logger.info("sql: {}", sql);
-        assertEquals("update user set id = $id, name = $name, password = $password where user.id = $id", sql);
+        assertEquals("update user set id = $id, name = $name, password = $password where id = $id", sql);
     }
 
     @Test
     public void testUpdateAllAndIgnoreId() {
         String sql = orqlToSql.toUpdate(parse("user(id = $id): {*, !id}"));
         logger.info("sql: {}", sql);
-        assertEquals("update user set name = $name, password = $password where user.id = $id", sql);
+        assertEquals("update user set name = $name, password = $password where id = $id", sql);
     }
 
     @Test
     public void testUpdateBelongsTo() {
         String sql = orqlToSql.toUpdate(parse("user(id = $id) : {name, password, role}"));
         logger.info("sql: {}", sql);
-        assertEquals("update user set name = $name, password = $password, role_id = $role.id where user.id = $id", sql);
+        assertEquals("update user set name = $name, password = $password, role_id = $role.id where id = $id", sql);
     }
 
 }
