@@ -7,15 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class OrqlParserTest {
-
-    private SchemaManager schemaManager;
-
-    @Before
-    public void init() {
-        schemaManager = new SchemaManager();
-        schemaManager.scanPackage("com.github.orql.core.schema");
-    }
+public class OrqlParserTest extends TestBase {
 
     private OrqlRefItem parse(String orql) {
         OrqlParser parser = new OrqlParser(schemaManager);

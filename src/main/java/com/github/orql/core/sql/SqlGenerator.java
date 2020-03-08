@@ -128,9 +128,9 @@ public class SqlGenerator {
 
     private String genAdd(SqlInsert insert) {
         return "insert into " + insert.getTable() +
-                "(" + insert.getColumns().stream().map(SqlColumn::getName).collect(Collectors.joining(", ")) + ")" +
-                " values " +
-                "(" + insert.getParams().stream().map(this::genSqlParam).collect(Collectors.joining(", ")) + ")";
+                " (" + insert.getColumns().stream().map(SqlColumn::getName).collect(Collectors.joining(", ")) + ")" +
+                " values" +
+                " (" + insert.getParams().stream().map(this::genSqlParam).collect(Collectors.joining(", ")) + ")";
     }
 
     private String genDelete(SqlDelete delete) {
@@ -197,7 +197,7 @@ public class SqlGenerator {
         if (sqlParamTemplate != null) {
             return sqlParamTemplate.gen(param);
         }
-        return "$" + param;
+        return "$" + param.getName();
     }
 
     private String genSqlValue(Object value) {
