@@ -4,14 +4,14 @@ import com.github.orql.core.annotation.BelongsTo;
 import com.github.orql.core.annotation.Column;
 import com.github.orql.core.annotation.Schema;
 
-@Schema
+@Schema(table = "user_info")
 public class UserInfo {
 
     @Column(primaryKey = true, generatedKey = true)
     private Long id;
 
     @Column
-    private String no;
+    private String birthday;
 
     @BelongsTo
     private User user;
@@ -24,12 +24,12 @@ public class UserInfo {
         this.id = id;
     }
 
-    public String getNo() {
-        return no;
+    public String getBirthday() {
+        return birthday;
     }
 
-    public void setNo(String no) {
-        this.no = no;
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
     }
 
     public User getUser() {
@@ -38,5 +38,13 @@ public class UserInfo {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "id=" + id +
+                ", birthday='" + birthday + '\'' +
+                '}';
     }
 }

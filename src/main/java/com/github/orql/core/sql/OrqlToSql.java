@@ -158,7 +158,7 @@ public class OrqlToSql {
         //存在数组类型关联
         boolean hasArrayRef = false;
         // 存在添加查询id列，关联情况下需要添加id列用于mapper，优化为limit 1可去除
-        SqlColumn addIdColumn = null;
+        List<SqlColumn> addIdColumns = new ArrayList<>();
 
         while (!queryStack.isEmpty()) {
             QueryWrapper queryWrapper = queryStack.pop();
@@ -278,8 +278,9 @@ public class OrqlToSql {
             if (!hasId) {
                 if (op != QueryOp.Count && hasSelect) {
                     //插入id
-                    addIdColumn = new SqlColumn(idColumn.getField(), currentSchema.getTable(), columnPrefix);
-                    select.add(addIdColumn);
+                    SqlColumn sqlIdColumn = new SqlColumn(idColumn.getField(), currentSchema.getTable(), columnPrefix);
+                    addIdColumns.add(sqlIdColumn);
+                    select.add(sqlIdColumn);
                 }
             }
         }
@@ -332,9 +333,11 @@ public class OrqlToSql {
             SqlForm from = new SqlTableForm(new SqlTable(table, table));
             query = new SqlQuery(select, from, where, joins, sqlOrders);
             query.setLimit1(true);
-            if (addIdColumn != null) {
-                // 移除插入的id
-                select.remove(addIdColumn);
+            if (!addIdColumns.isEmpty()) {
+                for (SqlColumn addIdColumn : addIdColumns) {
+                    // 移除插入的id
+                    select.remove(addIdColumn);
+                }
             }
         } else {
             if (rootExp != null) where.add(0, rootExp);
