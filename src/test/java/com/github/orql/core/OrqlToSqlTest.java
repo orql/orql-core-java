@@ -87,7 +87,14 @@ public class OrqlToSqlTest extends TestBase {
     public void testQuerySimple() {
         String sql = orqlToSql.toQuery(QueryOp.QueryOne, parse("user(id = $id) : {name}"), false, null);
         logger.info("sql: {}", sql);
-        assertEquals("select user.name as name from user as user where id = $id limit 1", sql);
+        assertEquals("select user.name as name from user as user where user.id = $id limit 1", sql);
+    }
+
+    @Test
+    public void testQueryBelongsTo() {
+        String sql = orqlToSql.toQuery(QueryOp.QueryOne, parse("user(id = $id) : {name, role: {id, name}}"), false, null);
+        logger.info("sql: {}", sql);
+        assertEquals("select user.name as name, role.id as role_id, role.name as role_name from user as user left join role as role on role.id = user.role_id where user.id = $id limit 1", sql);
     }
 
 }

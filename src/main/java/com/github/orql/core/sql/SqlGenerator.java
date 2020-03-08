@@ -187,9 +187,14 @@ public class SqlGenerator {
     }
 
     private String genColumn(SqlColumn column) {
-        return column.getColumnPrefix() != null
-                ? column.getColumnPrefix() + "." + column.getName()
-                : column.getName();
+        if (column.getColumnPrefix() != null) {
+            return column.getColumnPrefix() + "." + column.getName();
+        }
+        // 保留没有前缀的table前缀，避免列歧义
+        if (column.getTable() != null) {
+            return column.getTable() + "." + column.getName();
+        }
+        return column.getName();
     }
 
     private String genExpOp(ExpOp op) {

@@ -22,7 +22,7 @@ public class User {
     @HasMany(refKey = "authorId")
     private List<Post> posts;
 
-    @BelongsTo(refKey = "role_id")
+    @BelongsTo(refKey = "role_id", required = false)
     private Role role;
 
     public Long getId() {
