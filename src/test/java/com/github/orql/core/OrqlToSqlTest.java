@@ -104,4 +104,12 @@ public class OrqlToSqlTest extends TestBase {
         assertEquals("select user.name as name, info.birthday as info_birthday from user as user inner join user_info as info on info.userId = user.id where user.id = $id limit 1", sql);
     }
 
+    @Test
+    public void testQueryHasMany() {
+        String sql = orqlToSql.toQuery(QueryOp.QueryOne, parse("user(id = $id) : {name, posts: {id, title}}"), false, null);
+        logger.info("sql: {}", sql);
+        // 无法判断user id是否可以移除，所以只能保留
+        assertEquals("select user.name as name, user.id as id, posts.id as posts_id, posts.title as posts_title from user as user inner join post as posts on posts.authorId = user.id where user.id = $id", sql);
+    }
+
 }
