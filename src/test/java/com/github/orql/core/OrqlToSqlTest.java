@@ -112,4 +112,11 @@ public class OrqlToSqlTest extends TestBase {
         assertEquals("select user.name as name, user.id as id, posts.id as posts_id, posts.title as posts_title from user as user inner join post as posts on posts.authorId = user.id where user.id = $id", sql);
     }
 
+    @Test
+    public void testQueryBelongsToMany() {
+        String sql = orqlToSql.toQuery(QueryOp.QueryOne, parse("post(id = $id) : {title, tags: {id, name}}"), false, null);
+        logger.info("sql: {}", sql);
+        assertEquals("select post.title as title, post.id as id, tags.id as tags_id, tags.name as tags_name from post as post inner join postTag as tags_postTag on tags_postTag.postId = post.id  inner join tag as tags on tags.id = tags_postTag.tagId where post.id = $id", sql);
+    }
+
 }

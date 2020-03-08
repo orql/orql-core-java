@@ -235,16 +235,16 @@ public class OrqlToSql {
                         // postTags.tagId = tag.id
                         SchemaInfo targetSchema = association.getCurrent();
                         SchemaInfo foreign = association.getRef();
-                        String middlePath = childColumnPrefix + Constants.SqlSplit + association.getMiddle();
+                        String middlePath = childColumnPrefix + Constants.SqlSplit + association.getMiddleTable();
                         SqlExp leftOn = new SqlColumnExp(
-                                new SqlColumn(association.getMiddleKey(), association.getMiddle(), middlePath),
+                                new SqlColumn(association.getMiddleKey(), association.getMiddleTable(), middlePath),
                                 ExpOp.Eq,
                                 new SqlColumn(childIdColumn.getField(), currentSchema.getTable(), columnPrefix));
-                        joins.add(new SqlJoin(association.getMiddle(), middlePath, joinType, leftOn));
+                        joins.add(new SqlJoin(association.getMiddleTable(), middlePath, joinType, leftOn));
                         SqlExp rightOn = new SqlColumnExp(
                                 new SqlColumn(targetSchema.getIdColumn().getField(), childSchema.getTable(), childColumnPrefix),
                                 ExpOp.Eq,
-                                new SqlColumn(association.getRefMiddleKey(), association.getMiddle(), middlePath));
+                                new SqlColumn(association.getRefMiddleKey(), association.getMiddleTable(), middlePath));
                         joins.add(new SqlJoin(foreign.getTable(), childColumnPrefix, joinType, rightOn));
                     }
                 } else if (child instanceof OrqlNode.OrqlAllItem) {
