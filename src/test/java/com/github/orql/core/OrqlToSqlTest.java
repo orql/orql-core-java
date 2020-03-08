@@ -126,4 +126,18 @@ public class OrqlToSqlTest extends TestBase {
         assertEquals("select count(user.id) from user as user", sql);
     }
 
+    @Test
+    public void testPage() {
+        String sql = orqlToSql.toQuery(QueryOp.QueryAll, parse("user: {id, name}"), true, null);
+        logger.info("sql: {}", sql);
+        assertEquals("select user.id as id, user.name as name from user as user limit $offset, $limit", sql);
+    }
+
+    @Test
+    public void testHasManyPage() {
+        String sql = orqlToSql.toQuery(QueryOp.QueryAll, parse("user: {id, name, posts: {id, title}}"), true, null);
+        logger.info("sql: {}", sql);
+        assertEquals("select user.id as id, user.name as name, posts.id as posts_id, posts.title as posts_title from (select * from user limit $offset, $limit) as user inner join post as posts on posts.authorId = user.id", sql);
+    }
+
 }
