@@ -119,4 +119,11 @@ public class OrqlToSqlTest extends TestBase {
         assertEquals("select post.title as title, post.id as id, tags.id as tags_id, tags.name as tags_name from post as post inner join postTag as tags_postTag on tags_postTag.postId = post.id  inner join tag as tags on tags.id = tags_postTag.tagId where post.id = $id", sql);
     }
 
+    @Test
+    public void testCount() {
+        String sql = orqlToSql.toQuery(QueryOp.Count, parse("user"), false, null);
+        logger.info("sql: {}", sql);
+        assertEquals("select count(user.id) from user as user", sql);
+    }
+
 }
