@@ -48,7 +48,10 @@ public class OrqlToSql {
                 selectAll = true;
                 ignores = new ArrayList<>();
             } else if (item instanceof OrqlIgnoreItem) {
-                // FIXME 可能有空指针异常
+                if (ignores == null) {
+                    // 没有select all就忽略，抛出异常
+                    throw new SqlGenException();
+                }
                 ignores.add(item.getName());
             } else if (item instanceof OrqlColumnItem) {
                 ColumnInfo columnItem = ((OrqlColumnItem) item).getColumn();
