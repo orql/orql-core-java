@@ -1,6 +1,7 @@
 package com.github.orql.core;
 
 import com.github.orql.core.util.OrqlUtil;
+import com.github.orql.core.util.Strings;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,12 @@ public class StringsTest {
             assertEquals("bigint", m.group(1));
             assertEquals("10", m.group(2));
         }
+    }
+
+    @Test
+    public void underscoreTest() {
+        assertEquals("sys_user", Strings.camelCaseToUnderscore("sysUser"));
+        assertEquals("sys_user", Strings.camelCaseToUnderscore("SysUser"));
     }
 
 }

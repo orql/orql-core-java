@@ -15,13 +15,31 @@ import java.util.*;
 
 public class SchemaManager {
 
+    private static class ReflectWrapper {
+        public SchemaInfo schema;
+        public Field[] fields;
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(SchemaManager.class);
 
     private Map<String, SchemaInfo> schemas = new HashMap<>();
 
-    private static class ReflectWrapper {
-        public SchemaInfo schema;
-        public Field[] fields;
+    /**
+     * 表名下划线
+     */
+    private boolean tableUnderscore = false;
+
+    /**
+     * 字段下划线
+     */
+    private boolean fieldUnderscore = false;
+
+    public void tableUnderscore(boolean tableUnderscore) {
+        this.tableUnderscore = tableUnderscore;
+    }
+
+    public void fieldUnderscore(boolean fieldUnderscore) {
+        this.fieldUnderscore = fieldUnderscore;
     }
 
     public SchemaManager addSchema(SchemaInfo schema) {
@@ -85,6 +103,9 @@ public class SchemaManager {
         }
         if (!schemaAnnotation.table().equals("")) {
             schemaBuilder.table(schemaAnnotation.table());
+        } else if (tableUnderscore) {
+            // 驼峰转下划线
+            schemaBuilder.table(Strings.camelCaseToUnderscore(schemaBuilder.name()));
         }
         // clazz
         schemaBuilder.clazz(clazz);
@@ -111,6 +132,9 @@ public class SchemaManager {
         // field
         if (!columnAnnotation.field().equals("")) {
             columnBuilder.field(columnAnnotation.field());
+        } else if (fieldUnderscore) {
+            // 驼峰装下划线
+            columnBuilder.field(Strings.camelCaseToUnderscore(field.getName()));
         }
         // data type
         Class<?> type = field.getType();
@@ -228,7 +252,7 @@ public class SchemaManager {
                 }
                 // ref middle key
                 if (! belongsToManyAnnotation.refMiddleKey().equals("")) {
-                    builder.refKey(belongsToManyAnnotation.refMiddleKey());
+                    builder.refMiddleKey(belongsToManyAnnotation.refMiddleKey());
                 }
                 builder.build();
                 continue;

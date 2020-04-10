@@ -209,6 +209,10 @@ public class SchemaInfo {
             return this;
         }
 
+        public String name() {
+            return schema.name;
+        }
+
         public Builder table(String table) {
             schema.table = table;
             return this;
